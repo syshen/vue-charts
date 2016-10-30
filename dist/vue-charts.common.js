@@ -212,6 +212,7 @@ var Chart = {
   },
   mounted: function mounted() {
     var self = this;
+    this.$on('redrawChart', this.drawChart);
     googleChartsLoader(self.packages, self.version, self.mapsApiKey).then(self.drawChart).then(function () {
       // we don't want to bind props because it's a kind of "computed" property
       var watchProps = props;
@@ -330,8 +331,8 @@ var Chart = {
         return;
       }
 
-      if (_.isNull(self.chart)) {
-        // We haven't built the chart yet, so JUST. DO. IT!
+      if (_.isNull(self.chart) || this.chartType !== this.wrapper.getChartType()) {
+        // We haven't built the chart yet or different chart type, so rebuild the chart
         self.buildChart();
       } else {
         // Chart already exists, just update the data

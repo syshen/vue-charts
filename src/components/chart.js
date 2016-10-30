@@ -98,13 +98,9 @@ export default {
       hiddenColumns: []
     }
   },
-  events: {
-    redrawChart () {
-      this.drawChart()
-    }
-  },
   mounted () {
     let self = this
+    this.$on('redrawChart', this.drawChart);
     loadCharts(self.packages, self.version, self.mapsApiKey)
       .then(self.drawChart)
       .then(() => {
@@ -221,8 +217,8 @@ export default {
         return
       }
 
-      if (_.isNull(self.chart)) {
-        // We haven't built the chart yet, so JUST. DO. IT!
+      if (_.isNull(self.chart) || (this.chartType !== this.wrapper.getChartType())) {
+        // We haven't built the chart yet or different chart type, so rebuild the chart
         self.buildChart()
       } else {
         // Chart already exists, just update the data
